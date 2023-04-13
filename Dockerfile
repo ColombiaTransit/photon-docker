@@ -4,6 +4,8 @@ RUN mkdir -p /srv/photon
 ADD https://github.com/komoot/photon/releases/download/0.4.2/photon-0.4.2.jar /srv/photon
 ADD https://download1.graphhopper.com/public/extracts/by-country-code/co/photon-db-co-latest.tar.bz2 /srv/photon
 
+RUN apk add bzip2
+
 RUN \  
   bzip2 -cd /srv/photon/photon-db-co-latest.tar.bz2 && \
   tar x /srv/photon/photon-db-co-latest.tar

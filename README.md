@@ -1,2 +1,3 @@
 # photon-docker
-Photon Docker image
+
+Build a docker image to run the photon engine.

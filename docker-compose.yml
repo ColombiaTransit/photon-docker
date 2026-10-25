@@ -1,0 +1,44 @@
+# Photon voor Colombia.
+#
+#   docker compose up -d                       # Photon met de wekelijkse GraphHopper-dump
+#   docker compose --profile nominatim up -d   # eigen Nominatim uit de Geofabrik-export,
+#                                              # zet dan bij photon IMPORT_SOURCE=nominatim
+#
+# Opnieuw importeren (nieuwe data): FORCE_IMPORT=true docker compose up -d photon
+# (of het volume photon-data verwijderen). Daarna FORCE_IMPORT weer op false.
+services:
+  photon:
+    image: mvanlaar/photon-docker:latest
+    restart: unless-stopped
+    ports:
+      - "2322:2322"
+    environment:
+      JAVA_OPTS: "-Xmx6G"
+      IMPORT_SOURCE: "dump"            # of "nominatim"
+      LANGUAGES: "es,en"
+      COUNTRY_CODES: "co"
+      FORCE_IMPORT: "${FORCE_IMPORT:-false}"
+      NOMINATIM_HOST: "nominatim"
+      NOMINATIM_USER: "nominatim"
+      NOMINATIM_PASSWORD: "${NOMINATIM_PASSWORD:-nominatim}"
+    volumes:
+      - photon-data:/photon/photon_data
+
+  # Optioneel: Nominatim met de Colombia-export van Geofabrik (en dagelijkse updates).
+  # Eerste import duurt een paar uur. Zie https://github.com/mediagis/nominatim-docker
+  nominatim:
+    image: mediagis/nominatim:5.1
+    profiles: [nominatim]
+    restart: unless-stopped
+    shm_size: 1gb
+    environment:
+      PBF_URL: https://download.geofabrik.de/south-america/colombia-latest.osm.pbf
+      REPLICATION_URL: https://download.geofabrik.de/south-america/colombia-updates/
+      NOMINATIM_PASSWORD: "${NOMINATIM_PASSWORD:-nominatim}"
+      IMPORT_STYLE: full
+    volumes:
+      - nominatim-data:/var/lib/postgresql/16/main
+
+volumes:
+  photon-data:
+  nominatim-data:

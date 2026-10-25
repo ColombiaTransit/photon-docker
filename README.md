@@ -6,12 +6,8 @@ Colombia. Wordt o.a. gebruikt door `geocode_points.py` in gtfs-redbus.
 - Photon **1.3.0** (Java 21, ingebouwde OpenSearch). Andere versie: build-argument `PHOTON_VERSION`.
 - De database zit niet in het image maar in het volume `/photon/photon_data`; bij de eerste
   start wordt hij geïmporteerd (daarna niet meer, tenzij `FORCE_IMPORT=true`).
-- Twee bronnen (`IMPORT_SOURCE`):
-  - `dump` (standaard): de wekelijkse Colombia-dump van GraphHopper
-    (`DUMP_URL`, formaat 1.0, werkt met Photon ≥ 1.0.1);
-  - `nominatim`: uit een Nominatim-database, bv. de `nominatim`-service in
-    `docker-compose.yml` die de [Geofabrik-export van Colombia](https://download.geofabrik.de/south-america/colombia.html)
-    importeert en dagelijks bijwerkt. Photon importeert niet rechtstreeks uit een `.pbf`.
+- Bron: de wekelijkse Colombia-dump van GraphHopper (`DUMP_URL`, formaat 1.0, werkt met
+  Photon ≥ 1.0.1). Nieuwere data: opnieuw importeren met `FORCE_IMPORT=true`.
 - Talen: `LANGUAGES=es,en` (Spaanse namen doorzoekbaar met `lang=es`).
 
 ```bash

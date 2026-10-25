@@ -15,25 +15,12 @@ needs_import() {
 }
 
 if needs_import; then
-  echo "== Photon ${PHOTON_VERSION}: database importeren (bron: ${IMPORT_SOURCE})"
+  echo "== Photon ${PHOTON_VERSION}: database importeren uit ${DUMP_URL}"
   # Altijd in een tijdelijke map importeren en daarna omwisselen: nooit over een bestaande DB heen.
   tmp=/photon/import_tmp
   rm -rf "$tmp" && mkdir -p "$tmp"
-  case "${IMPORT_SOURCE}" in
-    dump)
-      echo "   dump: ${DUMP_URL}"
-      wget -q -O - "${DUMP_URL}" | zstd -dc \
-        | java ${JAVA_OPTS} -jar photon.jar import -data-dir "$tmp" -import-file - "${import_args[@]}"
-      ;;
-    nominatim)
-      echo "   Nominatim: ${NOMINATIM_USER}@${NOMINATIM_HOST}:${NOMINATIM_PORT}/${NOMINATIM_DB}"
-      java ${JAVA_OPTS} -jar photon.jar import -data-dir "$tmp" \
-        -host "${NOMINATIM_HOST}" -port "${NOMINATIM_PORT}" -database "${NOMINATIM_DB}" \
-        -user "${NOMINATIM_USER}" -password "${NOMINATIM_PASSWORD}" "${import_args[@]}"
-      ;;
-    *)
-      echo "Onbekende IMPORT_SOURCE '${IMPORT_SOURCE}' (dump of nominatim)"; exit 1 ;;
-  esac
+  wget -q -O - "${DUMP_URL}" | zstd -dc \
+    | java ${JAVA_OPTS} -jar photon.jar import -data-dir "$tmp" -import-file - "${import_args[@]}"
   # Inhoud van het volume vervangen door de nieuwe database
   find "$DATA" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
   mv "$tmp"/photon_data/* "$DATA"/

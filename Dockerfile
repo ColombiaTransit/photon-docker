@@ -1,8 +1,7 @@
 # Photon (OSM-geocoder, OpenSearch-gebaseerd) voor Colombia.
 #
-# De database zit NIET meer in het image: bij de eerste start wordt hij in /photon/photon_data
-# (een volume) geïmporteerd, uit een JSON-dump (standaard: wekelijkse Colombia-dump van
-# GraphHopper) of uit een Nominatim-database (bv. gevuld met de Geofabrik-export).
+# De database zit NIET in het image: bij de eerste start wordt de wekelijkse Colombia-dump
+# van GraphHopper gedownload en in /photon/photon_data (een volume) geïmporteerd.
 # Zie README.md en docker-compose.yml.
 FROM eclipse-temurin:21-jre
 
@@ -25,16 +24,10 @@ EXPOSE 2322
 
 # Standaardinstellingen (te overschrijven met environment-variabelen)
 ENV JAVA_OPTS="-Xmx6G" \
-    IMPORT_SOURCE="dump" \
     DUMP_URL="https://download1.graphhopper.com/public/south-america/colombia/photon-dump-colombia-1.0-latest.jsonl.zst" \
     LANGUAGES="es,en" \
     COUNTRY_CODES="co" \
     EXTRA_TAGS="" \
-    NOMINATIM_HOST="nominatim" \
-    NOMINATIM_PORT="5432" \
-    NOMINATIM_DB="nominatim" \
-    NOMINATIM_USER="nominatim" \
-    NOMINATIM_PASSWORD="" \
     FORCE_IMPORT="false"
 
 HEALTHCHECK --interval=60s --timeout=10s --start-period=30m --retries=3 \
